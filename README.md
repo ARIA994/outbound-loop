@@ -43,6 +43,10 @@ flowchart LR
 
 Touches 2 to 5 reuse the first subject as `Re: ...`. A unique key on `(lead_id, touch)` makes a duplicate email for the same touch impossible.
 
+### n8n workflow
+
+![n8n workflow: five lanes, T1 to T5](docs/n8n-workflow.png)
+
 ## Country rules
 
 Stored in `country_rules`, one row per country, and pulled into the prompt for every lead.
@@ -108,5 +112,6 @@ Row level security is on for every table. n8n connects with the service key.
 ```
 sql/    schema, seed data and report queries
 n8n/    workflow export, credentials removed
+docs/   workflow screenshot
 data/   the same seed data as CSV, JSON and Markdown
 ```
