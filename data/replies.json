@@ -1,0 +1,302 @@
+{
+  "_note": "Fictional replies for testing the reply classifier and the knowledge-base answers. expected_kb_topic is null when the knowledge base does not hold the answer, so the agent must escalate instead of answering.",
+  "labels": [
+    "interested",
+    "question",
+    "not_now",
+    "not_interested",
+    "unsubscribe",
+    "wrong_person",
+    "out_of_office"
+  ],
+  "replies": [
+    {
+      "reply_id": "R-001",
+      "lead_id": "A-001",
+      "country": "A",
+      "text": "Hi, this looks interesting. Could we talk on Thursday morning? Let me know what time suits you.",
+      "expected_label": "interested",
+      "expected_action": "alert_rep",
+      "expected_kb_topic": null
+    },
+    {
+      "reply_id": "R-002",
+      "lead_id": "B-001",
+      "country": "B",
+      "text": "Thanks for reaching out. We would like more information and a time to talk this week.",
+      "expected_label": "interested",
+      "expected_action": "alert_rep",
+      "expected_kb_topic": null
+    },
+    {
+      "reply_id": "R-003",
+      "lead_id": "C-001",
+      "country": "C",
+      "text": "Good timing, we have three roles we are struggling to fill. Can you call me on Tuesday afternoon?",
+      "expected_label": "interested",
+      "expected_action": "alert_rep",
+      "expected_kb_topic": null
+    },
+    {
+      "reply_id": "R-004",
+      "lead_id": "D-001",
+      "country": "D",
+      "text": "This sounds relevant. Can we set up a short call next week?",
+      "expected_label": "interested",
+      "expected_action": "alert_rep",
+      "expected_kb_topic": null
+    },
+    {
+      "reply_id": "R-005",
+      "lead_id": "A-002",
+      "country": "A",
+      "text": "How quickly can you send us the first candidates for a sales role?",
+      "expected_label": "question",
+      "expected_action": "answer_from_kb_then_alert_rep",
+      "expected_kb_topic": "time_to_shortlist"
+    },
+    {
+      "reply_id": "R-006",
+      "lead_id": "B-002",
+      "country": "B",
+      "text": "Do you also recruit for engineering roles, or only sales?",
+      "expected_label": "question",
+      "expected_action": "answer_from_kb_then_alert_rep",
+      "expected_kb_topic": "roles_covered"
+    },
+    {
+      "reply_id": "R-007",
+      "lead_id": "C-002",
+      "country": "C",
+      "text": "How does the process work once we give you a role?",
+      "expected_label": "question",
+      "expected_action": "answer_from_kb_then_alert_rep",
+      "expected_kb_topic": "process"
+    },
+    {
+      "reply_id": "R-008",
+      "lead_id": "D-002",
+      "country": "D",
+      "text": "Where is candidate data stored, and do you offer a data processing agreement?",
+      "expected_label": "question",
+      "expected_action": "answer_from_kb_then_alert_rep",
+      "expected_kb_topic": "data_and_privacy"
+    },
+    {
+      "reply_id": "R-009",
+      "lead_id": "A-003",
+      "country": "A",
+      "text": "What is the minimum company size you work with?",
+      "expected_label": "question",
+      "expected_action": "answer_from_kb_then_alert_rep",
+      "expected_kb_topic": "minimum_size"
+    },
+    {
+      "reply_id": "R-010",
+      "lead_id": "B-003",
+      "country": "B",
+      "text": "What is your fee per hire?",
+      "expected_label": "question",
+      "expected_action": "escalate_to_rep_no_answer",
+      "expected_kb_topic": null
+    },
+    {
+      "reply_id": "R-011",
+      "lead_id": "C-003",
+      "country": "C",
+      "text": "Can you guarantee we will fill the role within a month?",
+      "expected_label": "question",
+      "expected_action": "escalate_to_rep_no_answer",
+      "expected_kb_topic": null
+    },
+    {
+      "reply_id": "R-012",
+      "lead_id": "D-003",
+      "country": "D",
+      "text": "Which companies in our industry have you worked with?",
+      "expected_label": "question",
+      "expected_action": "escalate_to_rep_no_answer",
+      "expected_kb_topic": null
+    },
+    {
+      "reply_id": "R-013",
+      "lead_id": "A-004",
+      "country": "A",
+      "text": "Thanks for the message. We are closing our yearly budget, so please contact me again in January.",
+      "expected_label": "not_now",
+      "expected_action": "snooze_90_days",
+      "expected_kb_topic": null
+    },
+    {
+      "reply_id": "R-014",
+      "lead_id": "B-004",
+      "country": "B",
+      "text": "Not a priority right now, but write to me again next quarter.",
+      "expected_label": "not_now",
+      "expected_action": "snooze_90_days",
+      "expected_kb_topic": null
+    },
+    {
+      "reply_id": "R-015",
+      "lead_id": "C-004",
+      "country": "C",
+      "text": "We are very busy this period. Could you get back to me in a few months?",
+      "expected_label": "not_now",
+      "expected_action": "snooze_90_days",
+      "expected_kb_topic": null
+    },
+    {
+      "reply_id": "R-016",
+      "lead_id": "D-004",
+      "country": "D",
+      "text": "Thanks, the timing does not work for us at the moment. Please try again early next year.",
+      "expected_label": "not_now",
+      "expected_action": "snooze_90_days",
+      "expected_kb_topic": null
+    },
+    {
+      "reply_id": "R-017",
+      "lead_id": "A-005",
+      "country": "A",
+      "text": "Thank you, but we already work with an agency and do not plan to change.",
+      "expected_label": "not_interested",
+      "expected_action": "close_lead",
+      "expected_kb_topic": null
+    },
+    {
+      "reply_id": "R-018",
+      "lead_id": "B-005",
+      "country": "B",
+      "text": "Thanks, but we are not interested.",
+      "expected_label": "not_interested",
+      "expected_action": "close_lead",
+      "expected_kb_topic": null
+    },
+    {
+      "reply_id": "R-019",
+      "lead_id": "C-005",
+      "country": "C",
+      "text": "We already have a solution in place and no interest in switching.",
+      "expected_label": "not_interested",
+      "expected_action": "close_lead",
+      "expected_kb_topic": null
+    },
+    {
+      "reply_id": "R-020",
+      "lead_id": "D-005",
+      "country": "D",
+      "text": "No thank you, this is not something we need.",
+      "expected_label": "not_interested",
+      "expected_action": "close_lead",
+      "expected_kb_topic": null
+    },
+    {
+      "reply_id": "R-021",
+      "lead_id": "A-006",
+      "country": "A",
+      "text": "Please remove my email from your list.",
+      "expected_label": "unsubscribe",
+      "expected_action": "suppress_and_delete_data",
+      "expected_kb_topic": null
+    },
+    {
+      "reply_id": "R-022",
+      "lead_id": "B-006",
+      "country": "B",
+      "text": "Do not contact me again and delete my data from your records.",
+      "expected_label": "unsubscribe",
+      "expected_action": "suppress_and_delete_data",
+      "expected_kb_topic": null
+    },
+    {
+      "reply_id": "R-023",
+      "lead_id": "C-006",
+      "country": "C",
+      "text": "I ask you to remove my address from your list and stop contacting me.",
+      "expected_label": "unsubscribe",
+      "expected_action": "suppress_and_delete_data",
+      "expected_kb_topic": null
+    },
+    {
+      "reply_id": "R-024",
+      "lead_id": "D-006",
+      "country": "D",
+      "text": "Please unsubscribe me and delete my details.",
+      "expected_label": "unsubscribe",
+      "expected_action": "suppress_and_delete_data",
+      "expected_kb_topic": null
+    },
+    {
+      "reply_id": "R-025",
+      "lead_id": "A-007",
+      "country": "A",
+      "text": "I am not the right person for this. You should speak to our finance director.",
+      "expected_label": "wrong_person",
+      "expected_action": "reroute_to_new_contact",
+      "expected_kb_topic": null
+    },
+    {
+      "reply_id": "R-026",
+      "lead_id": "B-007",
+      "country": "B",
+      "text": "I do not handle this topic. Please write to our head of finance, who makes that decision.",
+      "expected_label": "wrong_person",
+      "expected_action": "reroute_to_new_contact",
+      "expected_kb_topic": null
+    },
+    {
+      "reply_id": "R-027",
+      "lead_id": "C-007",
+      "country": "C",
+      "text": "This is not my area, you should contact our HR manager.",
+      "expected_label": "wrong_person",
+      "expected_action": "reroute_to_new_contact",
+      "expected_kb_topic": null
+    },
+    {
+      "reply_id": "R-028",
+      "lead_id": "D-007",
+      "country": "D",
+      "text": "I am not responsible for this. Please contact our people team.",
+      "expected_label": "wrong_person",
+      "expected_action": "reroute_to_new_contact",
+      "expected_kb_topic": null
+    },
+    {
+      "reply_id": "R-029",
+      "lead_id": "A-008",
+      "country": "A",
+      "text": "I am away until 20 October with limited access to email. I will reply when I am back.",
+      "expected_label": "out_of_office",
+      "expected_action": "pause_sequence_until_return",
+      "expected_kb_topic": null
+    },
+    {
+      "reply_id": "R-030",
+      "lead_id": "B-008",
+      "country": "B",
+      "text": "I am out of the office until 20 October and will answer when I return.",
+      "expected_label": "out_of_office",
+      "expected_action": "pause_sequence_until_return",
+      "expected_kb_topic": null
+    },
+    {
+      "reply_id": "R-031",
+      "lead_id": "C-008",
+      "country": "C",
+      "text": "Thank you for your email. I am on leave until 20 October.",
+      "expected_label": "out_of_office",
+      "expected_action": "pause_sequence_until_return",
+      "expected_kb_topic": null
+    },
+    {
+      "reply_id": "R-032",
+      "lead_id": "D-008",
+      "country": "D",
+      "text": "I am not in the office until 20 October and will reply after my return.",
+      "expected_label": "out_of_office",
+      "expected_action": "pause_sequence_until_return",
+      "expected_kb_topic": null
+    }
+  ]
+}

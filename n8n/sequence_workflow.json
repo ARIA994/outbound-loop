@@ -1,0 +1,2319 @@
+{
+  "name": "Outbound Loop: 5-touch sequence (Hirevo test)",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "# T1: First email (day 0)\nRuns daily at 09:00. Picks leads on touch 0.",
+        "height": 520,
+        "width": 2560,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -120,
+        -200
+      ],
+      "name": "T1 Note",
+      "id": "298fbab5-67b8-4388-989e-307b84653393"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "days",
+              "daysInterval": 1,
+              "triggerAtHour": 9,
+              "triggerAtMinute": 0
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "name": "T1 Schedule",
+      "id": "607ffa5b-7c87-4a0a-824b-a57f4e8377ce"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "leads",
+        "limit": 5,
+        "filterType": "manual",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "status",
+              "condition": "eq",
+              "keyValue": "ready"
+            },
+            {
+              "keyName": "current_touch",
+              "condition": "eq",
+              "keyValue": "0"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        220,
+        0
+      ],
+      "name": "T1 Get leads",
+      "id": "a0658dd9-e96e-456d-94a0-1ef593088657"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        440,
+        0
+      ],
+      "name": "T1 Loop",
+      "id": "90de873a-661f-4130-a359-81920873af03"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "country_rules",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "country",
+              "keyValue": "={{ $json.country }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        660,
+        -100
+      ],
+      "name": "T1 Country rules",
+      "id": "6a116ce3-06b5-4313-89e1-d50c685b8bfa"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You write one cold first email for Hirevo, a fictional recruitment agency that fills open roles with vetted candidates (test data).\n\nTASK\n1. Start with \"Hi\" and the contact's first name only, followed by a comma.\n2. Mention the hook in one natural sentence. Do not repeat its numbers and do not exaggerate it.\n3. Follow the pitch angle. Use the main value first, and the secondary value only if there is room.\n4. Include every \"Must include\" item in plain wording.\n\nWrite only from the facts below. Do not invent facts about the company or the person.\n\nLEAD\nName: {{ $('T1 Loop').item.json.contact_name }}\nTitle: {{ $('T1 Loop').item.json.contact_title }}\nCompany: {{ $('T1 Loop').item.json.company }}\nIndustry: {{ $('T1 Loop').item.json.industry }}\nEmployees: {{ $('T1 Loop').item.json.employees }}\nHook (the one specific thing to mention): {{ $('T1 Loop').item.json.personalization_hook }}\n\nCOUNTRY RULES (country {{ $('T1 Country rules').item.json.country }})\nPitch angle: {{ $('T1 Country rules').item.json.pitch_angle }}\nTone: {{ $('T1 Country rules').item.json.tone }}\nMain value: {{ $('T1 Country rules').item.json.main_value_prop }}\nSecondary value: {{ $('T1 Country rules').item.json.secondary_value_prop }}\nMust include: {{ $('T1 Country rules').item.json.required_elements.join('; ') }}\nNever claim: {{ $('T1 Country rules').item.json.banned_claims.join('; ') }}\nMaximum words in the body: {{ $('T1 Country rules').item.json.max_words }}\nCall to action, copied exactly: {{ $('T1 Country rules').item.json.cta }}\n\nWRITING RULES\n- Put the call to action in its own paragraph, copied character for character. Then a paragraph with \"Kind regards,\" and on the next line \"Aria\".\n- Separate every paragraph with a blank line.\n- Subject line: 60 characters or fewer, no exclamation marks.\n- Never write a number followed by %, EUR, euro or a currency sign. Never state fees, salaries or a time-to-hire.\n- Never use the words: guarantee, guaranteed, risk-free, best, leading, number one, perfect candidate, salary.\n- Never use an em dash. Use commas or full stops.\n- Do not name client companies or partners.\n- Plain text only, short paragraphs, no bullet points, no emojis.\n\nOUTPUT\nReturn only valid JSON, nothing before or after it, in exactly this shape:\n{\"subject\": \"string\", \"body\": \"string with \\n for line breaks\"}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        880,
+        -100
+      ],
+      "name": "T1 AI Agent",
+      "id": "b13428f6-aee3-486b-9f9c-c1d371e48413"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "claude-sonnet-5",
+          "cachedResultName": "Claude Sonnet 5"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.6,
+      "position": [
+        880,
+        120
+      ],
+      "name": "T1 Model",
+      "id": "8dddc48e-981e-4f00-8c41-5483f6cb19ce"
+    },
+    {
+      "parameters": {
+        "jsCode": "// T1: First email (day 0)\nconst lead = $('T1 Loop').item.json;\nconst rules = $('T1 Country rules').item.json;\nconst first = {};\nconst TOUCH = 1;\nconst MAX_WORDS = Number(rules.max_words);\nconst CTA = rules.cta;\nconst SUBJECT_MAX = 60;\nconst APPLY_COUNTRY_RULE = true;\n\n// 1. Read the AI's JSON\nconst raw = String($json.output ?? '').replace(/^```\\w*\\s*|```$/g, '').trim();\nlet data = {};\ntry { data = JSON.parse(raw); } catch (e) {}\n\nlet subject = String(data.subject ?? '').trim();\nif (first.subject) subject = 'Re: ' + String(first.subject).replace(/^re:\\s*/i, '');\nconst body = String(data.body ?? '').replace(/\\\\n/g, '\\n').trim();\nconst words = body.split(/\\s+/).filter(Boolean).length;\nconst all = subject + ' ' + body;\n\n// 2. Checks\nconst checks = {};\nchecks.valid_json = String(data.body ?? '').trim() !== '';\nchecks.subject_length = subject.length > 0 && subject.length <= SUBJECT_MAX;\nchecks.word_count = words > 0 && words <= MAX_WORDS;\nchecks.cta_present = body.includes(CTA);\nchecks.no_exact_figures = !/\\d+(\\.\\d+)?\\s?(%|percent|eur|euro|€|\\$|£)/i.test(all);\nchecks.no_guarantee = !/guarantee|risk-free/i.test(all);\nchecks.no_em_dash = !/\\u2014/.test(all);\nchecks.no_banned_words = !/\\b(best|number one|#1|leading|salary|perfect candidate)\\b/i.test(body);\n\n// 3. Country rule (first three emails only)\nif (APPLY_COUNTRY_RULE) {\n  const firstTwo = body.split(/(?<=[.?!])\\s+/).slice(0, 2).join(' ');\n  if (rules.country === 'A') {\n    checks.country_rule = /depend/i.test(body);\n  } else if (rules.country === 'B') {\n    checks.country_rule = /candidate/i.test(firstTwo);\n  } else if (rules.country === 'C') {\n    checks.country_rule = /depend/i.test(body) && /seniority/i.test(body);\n  } else if (rules.country === 'D') {\n    checks.country_rule = true; // covered by no_banned_words\n  } else {\n    checks.country_rule = false;\n  }\n}\n\n// 4. Result\nconst pass = Object.values(checks).every(Boolean);\nreturn {\n  json: {\n    pass,\n    status: pass ? 'draft' : 'failed',\n    touch: TOUCH,\n    checks,\n    failed_checks: Object.keys(checks).filter(k => !checks[k]),\n    lead_id: lead.lead_id,\n    country: rules.country,\n    to_email: lead.email,\n    subject,\n    body,\n    word_count: words,\n    raw_output: pass ? null : raw.slice(0, 1500)\n  }\n};",
+        "mode": "runOnceForEachItem"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1180,
+        -100
+      ],
+      "name": "T1 Check",
+      "id": "3ed85774-2559-4307-bb02-f96baaea057e"
+    },
+    {
+      "parameters": {
+        "tableId": "emails",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "lead_id",
+              "fieldValue": "={{ $('T1 Check').item.json.lead_id }}"
+            },
+            {
+              "fieldId": "touch",
+              "fieldValue": "={{ $('T1 Check').item.json.touch }}"
+            },
+            {
+              "fieldId": "country",
+              "fieldValue": "={{ $('T1 Check').item.json.country }}"
+            },
+            {
+              "fieldId": "subject",
+              "fieldValue": "={{ $('T1 Check').item.json.subject }}"
+            },
+            {
+              "fieldId": "body",
+              "fieldValue": "={{ $('T1 Check').item.json.body }}"
+            },
+            {
+              "fieldId": "word_count",
+              "fieldValue": "={{ $('T1 Check').item.json.word_count }}"
+            },
+            {
+              "fieldId": "status",
+              "fieldValue": "={{ $('T1 Check').item.json.status }}"
+            },
+            {
+              "fieldId": "checks",
+              "fieldValue": "={{ $('T1 Check').item.json.checks }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1400,
+        -100
+      ],
+      "name": "T1 Save email",
+      "onError": "continueRegularOutput",
+      "id": "08a0872c-22e5-4b38-99fd-c51df4e4305a"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "leads",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "lead_id",
+              "condition": "eq",
+              "keyValue": "={{ $('T1 Check').item.json.lead_id }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "status",
+              "fieldValue": "in_sequence"
+            },
+            {
+              "fieldId": "current_touch",
+              "fieldValue": "1"
+            },
+            {
+              "fieldId": "next_touch_due",
+              "fieldValue": "={{ $now.plus({ days: 3 }).toISO() }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1620,
+        -100
+      ],
+      "name": "T1 Update lead",
+      "id": "76919cfc-2bef-4eaf-8be6-0e25fbc5997e"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "f0c8f465-7fa6-4ed6-aa15-d2f0c798e31e",
+              "leftValue": "={{ $('T1 Check').item.json.pass }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1840,
+        -100
+      ],
+      "name": "T1 Passed?",
+      "id": "da889ef3-63cb-419d-a19e-df6c4c471e92"
+    },
+    {
+      "parameters": {
+        "resource": "draft",
+        "subject": "={{ $('T1 Check').item.json.subject }}",
+        "emailType": "text",
+        "message": "={{ $('T1 Check').item.json.body }}",
+        "options": {
+          "sendTo": "={{ $('T1 Check').item.json.to_email }}"
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        2060,
+        -180
+      ],
+      "name": "T1 Gmail draft",
+      "id": "645a67e7-3064-4c09-b135-29443120d613"
+    },
+    {
+      "parameters": {
+        "content": "# T2: Second email (day 3)\nRuns daily at 09:10. Picks leads on touch 1 that are due.",
+        "height": 520,
+        "width": 2560,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -120,
+        440
+      ],
+      "name": "T2 Note",
+      "id": "04b45ace-ec26-4ad8-a922-97e8c31d6ba9"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "days",
+              "daysInterval": 1,
+              "triggerAtHour": 9,
+              "triggerAtMinute": 10
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        640
+      ],
+      "name": "T2 Schedule",
+      "id": "13252b8a-6ab7-4c5e-91ae-8509b0e58636"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "leads",
+        "limit": 5,
+        "filterType": "manual",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "status",
+              "condition": "eq",
+              "keyValue": "in_sequence"
+            },
+            {
+              "keyName": "current_touch",
+              "condition": "eq",
+              "keyValue": "1"
+            },
+            {
+              "keyName": "next_touch_due",
+              "condition": "lte",
+              "keyValue": "={{ $now.toISO() }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        220,
+        640
+      ],
+      "name": "T2 Get leads",
+      "id": "933c090d-2590-4506-8d0b-ad2d8a99930e"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        440,
+        640
+      ],
+      "name": "T2 Loop",
+      "id": "b23fa2c3-309d-4146-9261-125ec44d5788"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "country_rules",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "country",
+              "keyValue": "={{ $json.country }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        660,
+        540
+      ],
+      "name": "T2 Country rules",
+      "id": "163485c6-68c7-4456-8112-a338010d7629"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "emails",
+        "limit": 1,
+        "filterType": "manual",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "lead_id",
+              "condition": "eq",
+              "keyValue": "={{ $('T2 Loop').item.json.lead_id }}"
+            },
+            {
+              "keyName": "touch",
+              "condition": "eq",
+              "keyValue": "1"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        880,
+        540
+      ],
+      "name": "T2 First email",
+      "alwaysOutputData": true,
+      "id": "79902629-15be-46f1-b32e-6dcc0a1a4aab"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You write the second email in a sequence for Hirevo, a fictional recruitment agency that fills open roles with vetted candidates (test data). The contact has not replied to the first email below.\n\nTASK\n1. Start with \"Hi\" and the contact's first name only, followed by a comma.\n2. One short opening line that refers back to the first email. Do not repeat its content or the hook.\n3. Use the secondary value as the main point of this email.\n4. Include every \"Must include\" item in plain wording.\n\nWrite only from the facts below. Do not invent facts about the company or the person.\n\nLEAD\nName: {{ $('T2 Loop').item.json.contact_name }}\nTitle: {{ $('T2 Loop').item.json.contact_title }}\nCompany: {{ $('T2 Loop').item.json.company }}\nIndustry: {{ $('T2 Loop').item.json.industry }}\nEmployees: {{ $('T2 Loop').item.json.employees }}\n\nCOUNTRY RULES (country {{ $('T2 Country rules').item.json.country }})\nPitch angle: {{ $('T2 Country rules').item.json.pitch_angle }}\nTone: {{ $('T2 Country rules').item.json.tone }}\nMain value: {{ $('T2 Country rules').item.json.main_value_prop }}\nSecondary value: {{ $('T2 Country rules').item.json.secondary_value_prop }}\nMust include: {{ $('T2 Country rules').item.json.required_elements.join('; ') }}\nNever claim: {{ $('T2 Country rules').item.json.banned_claims.join('; ') }}\nMaximum words in the body: 80\nCall to action, copied exactly: {{ $('T2 Country rules').item.json.cta }}\n\nFIRST EMAIL (already sent, for context only)\nSubject: {{ $('T2 First email').item.json.subject }}\n{{ $('T2 First email').item.json.body }}\n\nWRITING RULES\n- Put the call to action in its own paragraph, copied character for character. Then a paragraph with \"Kind regards,\" and on the next line \"Aria\".\n- Separate every paragraph with a blank line.\n- Subject line: 60 characters or fewer, no exclamation marks.\n- Never write a number followed by %, EUR, euro or a currency sign. Never state fees, salaries or a time-to-hire.\n- Never use the words: guarantee, guaranteed, risk-free, best, leading, number one, perfect candidate, salary.\n- Never use an em dash. Use commas or full stops.\n- Do not name client companies or partners.\n- Plain text only, short paragraphs, no bullet points, no emojis.\n\nOUTPUT\nReturn only valid JSON, nothing before or after it, in exactly this shape:\n{\"subject\": \"string\", \"body\": \"string with \\n for line breaks\"}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1100,
+        540
+      ],
+      "name": "T2 AI Agent",
+      "id": "9823d2ba-28ef-4432-9b17-95dc4ca47833"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "claude-sonnet-5",
+          "cachedResultName": "Claude Sonnet 5"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.6,
+      "position": [
+        1100,
+        760
+      ],
+      "name": "T2 Model",
+      "id": "e77514d2-8440-4f28-a404-e3f1226ef01e"
+    },
+    {
+      "parameters": {
+        "jsCode": "// T2: Second email (day 3)\nconst lead = $('T2 Loop').item.json;\nconst rules = $('T2 Country rules').item.json;\nconst first = $('T2 First email').item.json || {};\nconst TOUCH = 2;\nconst MAX_WORDS = 80;\nconst CTA = rules.cta;\nconst SUBJECT_MAX = 70;\nconst APPLY_COUNTRY_RULE = true;\n\n// 1. Read the AI's JSON\nconst raw = String($json.output ?? '').replace(/^```\\w*\\s*|```$/g, '').trim();\nlet data = {};\ntry { data = JSON.parse(raw); } catch (e) {}\n\nlet subject = String(data.subject ?? '').trim();\nif (first.subject) subject = 'Re: ' + String(first.subject).replace(/^re:\\s*/i, '');\nconst body = String(data.body ?? '').replace(/\\\\n/g, '\\n').trim();\nconst words = body.split(/\\s+/).filter(Boolean).length;\nconst all = subject + ' ' + body;\n\n// 2. Checks\nconst checks = {};\nchecks.valid_json = String(data.body ?? '').trim() !== '';\nchecks.subject_length = subject.length > 0 && subject.length <= SUBJECT_MAX;\nchecks.word_count = words > 0 && words <= MAX_WORDS;\nchecks.cta_present = body.includes(CTA);\nchecks.no_exact_figures = !/\\d+(\\.\\d+)?\\s?(%|percent|eur|euro|€|\\$|£)/i.test(all);\nchecks.no_guarantee = !/guarantee|risk-free/i.test(all);\nchecks.no_em_dash = !/\\u2014/.test(all);\nchecks.no_banned_words = !/\\b(best|number one|#1|leading|salary|perfect candidate)\\b/i.test(body);\n\n// 3. Country rule (first three emails only)\nif (APPLY_COUNTRY_RULE) {\n  const firstTwo = body.split(/(?<=[.?!])\\s+/).slice(0, 2).join(' ');\n  if (rules.country === 'A') {\n    checks.country_rule = /depend/i.test(body);\n  } else if (rules.country === 'B') {\n    checks.country_rule = /candidate/i.test(firstTwo);\n  } else if (rules.country === 'C') {\n    checks.country_rule = /depend/i.test(body) && /seniority/i.test(body);\n  } else if (rules.country === 'D') {\n    checks.country_rule = true; // covered by no_banned_words\n  } else {\n    checks.country_rule = false;\n  }\n}\n\n// 4. Result\nconst pass = Object.values(checks).every(Boolean);\nreturn {\n  json: {\n    pass,\n    status: pass ? 'draft' : 'failed',\n    touch: TOUCH,\n    checks,\n    failed_checks: Object.keys(checks).filter(k => !checks[k]),\n    lead_id: lead.lead_id,\n    country: rules.country,\n    to_email: lead.email,\n    subject,\n    body,\n    word_count: words,\n    raw_output: pass ? null : raw.slice(0, 1500)\n  }\n};",
+        "mode": "runOnceForEachItem"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1400,
+        540
+      ],
+      "name": "T2 Check",
+      "id": "a7f2137a-f992-4052-a534-ee82f9d50566"
+    },
+    {
+      "parameters": {
+        "tableId": "emails",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "lead_id",
+              "fieldValue": "={{ $('T2 Check').item.json.lead_id }}"
+            },
+            {
+              "fieldId": "touch",
+              "fieldValue": "={{ $('T2 Check').item.json.touch }}"
+            },
+            {
+              "fieldId": "country",
+              "fieldValue": "={{ $('T2 Check').item.json.country }}"
+            },
+            {
+              "fieldId": "subject",
+              "fieldValue": "={{ $('T2 Check').item.json.subject }}"
+            },
+            {
+              "fieldId": "body",
+              "fieldValue": "={{ $('T2 Check').item.json.body }}"
+            },
+            {
+              "fieldId": "word_count",
+              "fieldValue": "={{ $('T2 Check').item.json.word_count }}"
+            },
+            {
+              "fieldId": "status",
+              "fieldValue": "={{ $('T2 Check').item.json.status }}"
+            },
+            {
+              "fieldId": "checks",
+              "fieldValue": "={{ $('T2 Check').item.json.checks }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1620,
+        540
+      ],
+      "name": "T2 Save email",
+      "onError": "continueRegularOutput",
+      "id": "c09ef909-63bf-4a2e-844d-5cb4cb3bd09f"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "leads",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "lead_id",
+              "condition": "eq",
+              "keyValue": "={{ $('T2 Check').item.json.lead_id }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "status",
+              "fieldValue": "in_sequence"
+            },
+            {
+              "fieldId": "current_touch",
+              "fieldValue": "2"
+            },
+            {
+              "fieldId": "next_touch_due",
+              "fieldValue": "={{ $now.plus({ days: 7 }).toISO() }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1840,
+        540
+      ],
+      "name": "T2 Update lead",
+      "id": "6d16a7f0-8683-4fa1-82e9-12faf44b9fd4"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "0045dbd2-d1ae-4078-894a-cc159059c38b",
+              "leftValue": "={{ $('T2 Check').item.json.pass }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2060,
+        540
+      ],
+      "name": "T2 Passed?",
+      "id": "7087f1ab-89f1-44d9-b338-cde043b519d2"
+    },
+    {
+      "parameters": {
+        "resource": "draft",
+        "subject": "={{ $('T2 Check').item.json.subject }}",
+        "emailType": "text",
+        "message": "={{ $('T2 Check').item.json.body }}",
+        "options": {
+          "sendTo": "={{ $('T2 Check').item.json.to_email }}"
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        2280,
+        460
+      ],
+      "name": "T2 Gmail draft",
+      "id": "51a1699f-6d05-456f-a55a-5200965299b6"
+    },
+    {
+      "parameters": {
+        "content": "# T3: Follow-up 1 (day 10)\nRuns daily at 09:20. Picks leads on touch 2 that are due.",
+        "height": 520,
+        "width": 2560,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -120,
+        1080
+      ],
+      "name": "T3 Note",
+      "id": "6eefbe6a-c29c-4f23-a110-c3abeedb4b0b"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "days",
+              "daysInterval": 1,
+              "triggerAtHour": 9,
+              "triggerAtMinute": 20
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        1280
+      ],
+      "name": "T3 Schedule",
+      "id": "58916c71-bd2a-4110-b28d-0ac5a3cec4ae"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "leads",
+        "limit": 5,
+        "filterType": "manual",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "status",
+              "condition": "eq",
+              "keyValue": "in_sequence"
+            },
+            {
+              "keyName": "current_touch",
+              "condition": "eq",
+              "keyValue": "2"
+            },
+            {
+              "keyName": "next_touch_due",
+              "condition": "lte",
+              "keyValue": "={{ $now.toISO() }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        220,
+        1280
+      ],
+      "name": "T3 Get leads",
+      "id": "a91b99bd-0caa-4ab5-b1b0-e5447b73e78c"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        440,
+        1280
+      ],
+      "name": "T3 Loop",
+      "id": "27c15ed4-f8a6-44f3-95c7-41a92f73178a"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "country_rules",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "country",
+              "keyValue": "={{ $json.country }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        660,
+        1180
+      ],
+      "name": "T3 Country rules",
+      "id": "cacb29a1-154b-4c8d-958a-f404a03bb5df"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "emails",
+        "limit": 1,
+        "filterType": "manual",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "lead_id",
+              "condition": "eq",
+              "keyValue": "={{ $('T3 Loop').item.json.lead_id }}"
+            },
+            {
+              "keyName": "touch",
+              "condition": "eq",
+              "keyValue": "1"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        880,
+        1180
+      ],
+      "name": "T3 First email",
+      "alwaysOutputData": true,
+      "id": "602a7780-bb42-495b-9a27-481abb039249"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You write follow-up 1 in a sequence for Hirevo, a fictional recruitment agency that fills open roles with vetted candidates (test data). The contact has not replied to the earlier emails.\n\nTASK\n1. Start with \"Hi\" and the contact's first name only, followed by a comma.\n2. Give one useful detail about how Hirevo works: each role starts with a short brief with the hiring manager, one recruiter owns the role, and the hiring manager gets a progress update every week.\n3. Do not repeat the first email or the hook.\n4. Include every \"Must include\" item in plain wording.\n\nWrite only from the facts below. Do not invent facts about the company or the person.\n\nLEAD\nName: {{ $('T3 Loop').item.json.contact_name }}\nTitle: {{ $('T3 Loop').item.json.contact_title }}\nCompany: {{ $('T3 Loop').item.json.company }}\nIndustry: {{ $('T3 Loop').item.json.industry }}\nEmployees: {{ $('T3 Loop').item.json.employees }}\n\nCOUNTRY RULES (country {{ $('T3 Country rules').item.json.country }})\nPitch angle: {{ $('T3 Country rules').item.json.pitch_angle }}\nTone: {{ $('T3 Country rules').item.json.tone }}\nMain value: {{ $('T3 Country rules').item.json.main_value_prop }}\nSecondary value: {{ $('T3 Country rules').item.json.secondary_value_prop }}\nMust include: {{ $('T3 Country rules').item.json.required_elements.join('; ') }}\nNever claim: {{ $('T3 Country rules').item.json.banned_claims.join('; ') }}\nMaximum words in the body: 80\nCall to action, copied exactly: {{ $('T3 Country rules').item.json.cta }}\n\nFIRST EMAIL (already sent, for context only)\nSubject: {{ $('T3 First email').item.json.subject }}\n{{ $('T3 First email').item.json.body }}\n\nWRITING RULES\n- Put the call to action in its own paragraph, copied character for character. Then a paragraph with \"Kind regards,\" and on the next line \"Aria\".\n- Separate every paragraph with a blank line.\n- Subject line: 60 characters or fewer, no exclamation marks.\n- Never write a number followed by %, EUR, euro or a currency sign. Never state fees, salaries or a time-to-hire.\n- Never use the words: guarantee, guaranteed, risk-free, best, leading, number one, perfect candidate, salary.\n- Never use an em dash. Use commas or full stops.\n- Do not name client companies or partners.\n- Plain text only, short paragraphs, no bullet points, no emojis.\n\nOUTPUT\nReturn only valid JSON, nothing before or after it, in exactly this shape:\n{\"subject\": \"string\", \"body\": \"string with \\n for line breaks\"}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1100,
+        1180
+      ],
+      "name": "T3 AI Agent",
+      "id": "56182807-bd54-498d-9fe0-6ca132a68313"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "claude-sonnet-5",
+          "cachedResultName": "Claude Sonnet 5"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.6,
+      "position": [
+        1100,
+        1400
+      ],
+      "name": "T3 Model",
+      "id": "26ea4a75-5d22-4b6d-a82d-cefddace1aeb"
+    },
+    {
+      "parameters": {
+        "jsCode": "// T3: Follow-up 1 (day 10)\nconst lead = $('T3 Loop').item.json;\nconst rules = $('T3 Country rules').item.json;\nconst first = $('T3 First email').item.json || {};\nconst TOUCH = 3;\nconst MAX_WORDS = 80;\nconst CTA = rules.cta;\nconst SUBJECT_MAX = 70;\nconst APPLY_COUNTRY_RULE = true;\n\n// 1. Read the AI's JSON\nconst raw = String($json.output ?? '').replace(/^```\\w*\\s*|```$/g, '').trim();\nlet data = {};\ntry { data = JSON.parse(raw); } catch (e) {}\n\nlet subject = String(data.subject ?? '').trim();\nif (first.subject) subject = 'Re: ' + String(first.subject).replace(/^re:\\s*/i, '');\nconst body = String(data.body ?? '').replace(/\\\\n/g, '\\n').trim();\nconst words = body.split(/\\s+/).filter(Boolean).length;\nconst all = subject + ' ' + body;\n\n// 2. Checks\nconst checks = {};\nchecks.valid_json = String(data.body ?? '').trim() !== '';\nchecks.subject_length = subject.length > 0 && subject.length <= SUBJECT_MAX;\nchecks.word_count = words > 0 && words <= MAX_WORDS;\nchecks.cta_present = body.includes(CTA);\nchecks.no_exact_figures = !/\\d+(\\.\\d+)?\\s?(%|percent|eur|euro|€|\\$|£)/i.test(all);\nchecks.no_guarantee = !/guarantee|risk-free/i.test(all);\nchecks.no_em_dash = !/\\u2014/.test(all);\nchecks.no_banned_words = !/\\b(best|number one|#1|leading|salary|perfect candidate)\\b/i.test(body);\n\n// 3. Country rule (first three emails only)\nif (APPLY_COUNTRY_RULE) {\n  const firstTwo = body.split(/(?<=[.?!])\\s+/).slice(0, 2).join(' ');\n  if (rules.country === 'A') {\n    checks.country_rule = /depend/i.test(body);\n  } else if (rules.country === 'B') {\n    checks.country_rule = /candidate/i.test(firstTwo);\n  } else if (rules.country === 'C') {\n    checks.country_rule = /depend/i.test(body) && /seniority/i.test(body);\n  } else if (rules.country === 'D') {\n    checks.country_rule = true; // covered by no_banned_words\n  } else {\n    checks.country_rule = false;\n  }\n}\n\n// 4. Result\nconst pass = Object.values(checks).every(Boolean);\nreturn {\n  json: {\n    pass,\n    status: pass ? 'draft' : 'failed',\n    touch: TOUCH,\n    checks,\n    failed_checks: Object.keys(checks).filter(k => !checks[k]),\n    lead_id: lead.lead_id,\n    country: rules.country,\n    to_email: lead.email,\n    subject,\n    body,\n    word_count: words,\n    raw_output: pass ? null : raw.slice(0, 1500)\n  }\n};",
+        "mode": "runOnceForEachItem"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1400,
+        1180
+      ],
+      "name": "T3 Check",
+      "id": "079da90e-3db7-4730-9158-d675d34f26b8"
+    },
+    {
+      "parameters": {
+        "tableId": "emails",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "lead_id",
+              "fieldValue": "={{ $('T3 Check').item.json.lead_id }}"
+            },
+            {
+              "fieldId": "touch",
+              "fieldValue": "={{ $('T3 Check').item.json.touch }}"
+            },
+            {
+              "fieldId": "country",
+              "fieldValue": "={{ $('T3 Check').item.json.country }}"
+            },
+            {
+              "fieldId": "subject",
+              "fieldValue": "={{ $('T3 Check').item.json.subject }}"
+            },
+            {
+              "fieldId": "body",
+              "fieldValue": "={{ $('T3 Check').item.json.body }}"
+            },
+            {
+              "fieldId": "word_count",
+              "fieldValue": "={{ $('T3 Check').item.json.word_count }}"
+            },
+            {
+              "fieldId": "status",
+              "fieldValue": "={{ $('T3 Check').item.json.status }}"
+            },
+            {
+              "fieldId": "checks",
+              "fieldValue": "={{ $('T3 Check').item.json.checks }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1620,
+        1180
+      ],
+      "name": "T3 Save email",
+      "onError": "continueRegularOutput",
+      "id": "dc63ff45-d959-49df-8e09-bab803fa931d"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "leads",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "lead_id",
+              "condition": "eq",
+              "keyValue": "={{ $('T3 Check').item.json.lead_id }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "status",
+              "fieldValue": "in_sequence"
+            },
+            {
+              "fieldId": "current_touch",
+              "fieldValue": "3"
+            },
+            {
+              "fieldId": "next_touch_due",
+              "fieldValue": "={{ $now.plus({ days: 7 }).toISO() }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1840,
+        1180
+      ],
+      "name": "T3 Update lead",
+      "id": "6f8bb9f6-e84e-4844-a595-92f2fa552ff0"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "ce9f5851-63c3-4057-9640-0d1501fd6eec",
+              "leftValue": "={{ $('T3 Check').item.json.pass }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2060,
+        1180
+      ],
+      "name": "T3 Passed?",
+      "id": "00ec2036-b894-4198-b268-a9e9f962918b"
+    },
+    {
+      "parameters": {
+        "resource": "draft",
+        "subject": "={{ $('T3 Check').item.json.subject }}",
+        "emailType": "text",
+        "message": "={{ $('T3 Check').item.json.body }}",
+        "options": {
+          "sendTo": "={{ $('T3 Check').item.json.to_email }}"
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        2280,
+        1100
+      ],
+      "name": "T3 Gmail draft",
+      "id": "83182e68-ac74-4f21-8e91-fe51a98c9073"
+    },
+    {
+      "parameters": {
+        "content": "# T4: Follow-up 2 (day 17)\nRuns daily at 09:30. Picks leads on touch 3 that are due.",
+        "height": 520,
+        "width": 2560,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -120,
+        1720
+      ],
+      "name": "T4 Note",
+      "id": "c7c3598a-a8eb-4d76-b1ad-facd597a6ee4"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "days",
+              "daysInterval": 1,
+              "triggerAtHour": 9,
+              "triggerAtMinute": 30
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        1920
+      ],
+      "name": "T4 Schedule",
+      "id": "01013bcb-1e86-4e8a-af42-47a5ba979342"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "leads",
+        "limit": 5,
+        "filterType": "manual",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "status",
+              "condition": "eq",
+              "keyValue": "in_sequence"
+            },
+            {
+              "keyName": "current_touch",
+              "condition": "eq",
+              "keyValue": "3"
+            },
+            {
+              "keyName": "next_touch_due",
+              "condition": "lte",
+              "keyValue": "={{ $now.toISO() }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        220,
+        1920
+      ],
+      "name": "T4 Get leads",
+      "id": "93a657f5-5fb6-46c2-96f0-76fb7d11b95b"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        440,
+        1920
+      ],
+      "name": "T4 Loop",
+      "id": "af5a1376-4317-467c-b31f-5d62afa19a85"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "country_rules",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "country",
+              "keyValue": "={{ $json.country }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        660,
+        1820
+      ],
+      "name": "T4 Country rules",
+      "id": "33d0d140-f4cd-4d7f-91f6-fdbc23e907ec"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "emails",
+        "limit": 1,
+        "filterType": "manual",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "lead_id",
+              "condition": "eq",
+              "keyValue": "={{ $('T4 Loop').item.json.lead_id }}"
+            },
+            {
+              "keyName": "touch",
+              "condition": "eq",
+              "keyValue": "1"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        880,
+        1820
+      ],
+      "name": "T4 First email",
+      "alwaysOutputData": true,
+      "id": "931054f5-e6eb-4f77-a9f2-a0f1791d81c9"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You write follow-up 2 in a sequence for Hirevo, a fictional recruitment agency that fills open roles with vetted candidates (test data). The contact has not replied to the earlier emails.\n\nTASK\n1. Start with \"Hi\" and the contact's first name only, followed by a comma.\n2. A short, friendly check-in. Ask whether filling open roles is still a priority for them this quarter.\n3. No new product claims. Do not repeat the earlier emails.\n\nWrite only from the facts below. Do not invent facts about the company or the person.\n\nLEAD\nName: {{ $('T4 Loop').item.json.contact_name }}\nTitle: {{ $('T4 Loop').item.json.contact_title }}\nCompany: {{ $('T4 Loop').item.json.company }}\nIndustry: {{ $('T4 Loop').item.json.industry }}\nEmployees: {{ $('T4 Loop').item.json.employees }}\n\nCOUNTRY RULES (country {{ $('T4 Country rules').item.json.country }})\nPitch angle: {{ $('T4 Country rules').item.json.pitch_angle }}\nTone: {{ $('T4 Country rules').item.json.tone }}\nMain value: {{ $('T4 Country rules').item.json.main_value_prop }}\nSecondary value: {{ $('T4 Country rules').item.json.secondary_value_prop }}\nNever claim: {{ $('T4 Country rules').item.json.banned_claims.join('; ') }}\nMaximum words in the body: 60\nCall to action, copied exactly: {{ $('T4 Country rules').item.json.cta }}\n\nFIRST EMAIL (already sent, for context only)\nSubject: {{ $('T4 First email').item.json.subject }}\n{{ $('T4 First email').item.json.body }}\n\nWRITING RULES\n- Put the call to action in its own paragraph, copied character for character. Then a paragraph with \"Kind regards,\" and on the next line \"Aria\".\n- Separate every paragraph with a blank line.\n- Subject line: 60 characters or fewer, no exclamation marks.\n- Never write a number followed by %, EUR, euro or a currency sign. Never state fees, salaries or a time-to-hire.\n- Never use the words: guarantee, guaranteed, risk-free, best, leading, number one, perfect candidate, salary.\n- Never use an em dash. Use commas or full stops.\n- Do not name client companies or partners.\n- Plain text only, short paragraphs, no bullet points, no emojis.\n\nOUTPUT\nReturn only valid JSON, nothing before or after it, in exactly this shape:\n{\"subject\": \"string\", \"body\": \"string with \\n for line breaks\"}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1100,
+        1820
+      ],
+      "name": "T4 AI Agent",
+      "id": "ff1f55c7-03fd-4d28-84ac-15d51c09d497"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "claude-sonnet-5",
+          "cachedResultName": "Claude Sonnet 5"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.6,
+      "position": [
+        1100,
+        2040
+      ],
+      "name": "T4 Model",
+      "id": "af260884-c411-4717-bd0b-dd6c637c1597"
+    },
+    {
+      "parameters": {
+        "jsCode": "// T4: Follow-up 2 (day 17)\nconst lead = $('T4 Loop').item.json;\nconst rules = $('T4 Country rules').item.json;\nconst first = $('T4 First email').item.json || {};\nconst TOUCH = 4;\nconst MAX_WORDS = 60;\nconst CTA = rules.cta;\nconst SUBJECT_MAX = 70;\nconst APPLY_COUNTRY_RULE = false;\n\n// 1. Read the AI's JSON\nconst raw = String($json.output ?? '').replace(/^```\\w*\\s*|```$/g, '').trim();\nlet data = {};\ntry { data = JSON.parse(raw); } catch (e) {}\n\nlet subject = String(data.subject ?? '').trim();\nif (first.subject) subject = 'Re: ' + String(first.subject).replace(/^re:\\s*/i, '');\nconst body = String(data.body ?? '').replace(/\\\\n/g, '\\n').trim();\nconst words = body.split(/\\s+/).filter(Boolean).length;\nconst all = subject + ' ' + body;\n\n// 2. Checks\nconst checks = {};\nchecks.valid_json = String(data.body ?? '').trim() !== '';\nchecks.subject_length = subject.length > 0 && subject.length <= SUBJECT_MAX;\nchecks.word_count = words > 0 && words <= MAX_WORDS;\nchecks.cta_present = body.includes(CTA);\nchecks.no_exact_figures = !/\\d+(\\.\\d+)?\\s?(%|percent|eur|euro|€|\\$|£)/i.test(all);\nchecks.no_guarantee = !/guarantee|risk-free/i.test(all);\nchecks.no_em_dash = !/\\u2014/.test(all);\nchecks.no_banned_words = !/\\b(best|number one|#1|leading|salary|perfect candidate)\\b/i.test(body);\n\n// 3. Country rule (first three emails only)\nif (APPLY_COUNTRY_RULE) {\n  const firstTwo = body.split(/(?<=[.?!])\\s+/).slice(0, 2).join(' ');\n  if (rules.country === 'A') {\n    checks.country_rule = /depend/i.test(body);\n  } else if (rules.country === 'B') {\n    checks.country_rule = /candidate/i.test(firstTwo);\n  } else if (rules.country === 'C') {\n    checks.country_rule = /depend/i.test(body) && /seniority/i.test(body);\n  } else if (rules.country === 'D') {\n    checks.country_rule = true; // covered by no_banned_words\n  } else {\n    checks.country_rule = false;\n  }\n}\n\n// 4. Result\nconst pass = Object.values(checks).every(Boolean);\nreturn {\n  json: {\n    pass,\n    status: pass ? 'draft' : 'failed',\n    touch: TOUCH,\n    checks,\n    failed_checks: Object.keys(checks).filter(k => !checks[k]),\n    lead_id: lead.lead_id,\n    country: rules.country,\n    to_email: lead.email,\n    subject,\n    body,\n    word_count: words,\n    raw_output: pass ? null : raw.slice(0, 1500)\n  }\n};",
+        "mode": "runOnceForEachItem"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1400,
+        1820
+      ],
+      "name": "T4 Check",
+      "id": "ea38e808-6eaa-4389-8abf-4fc496a72566"
+    },
+    {
+      "parameters": {
+        "tableId": "emails",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "lead_id",
+              "fieldValue": "={{ $('T4 Check').item.json.lead_id }}"
+            },
+            {
+              "fieldId": "touch",
+              "fieldValue": "={{ $('T4 Check').item.json.touch }}"
+            },
+            {
+              "fieldId": "country",
+              "fieldValue": "={{ $('T4 Check').item.json.country }}"
+            },
+            {
+              "fieldId": "subject",
+              "fieldValue": "={{ $('T4 Check').item.json.subject }}"
+            },
+            {
+              "fieldId": "body",
+              "fieldValue": "={{ $('T4 Check').item.json.body }}"
+            },
+            {
+              "fieldId": "word_count",
+              "fieldValue": "={{ $('T4 Check').item.json.word_count }}"
+            },
+            {
+              "fieldId": "status",
+              "fieldValue": "={{ $('T4 Check').item.json.status }}"
+            },
+            {
+              "fieldId": "checks",
+              "fieldValue": "={{ $('T4 Check').item.json.checks }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1620,
+        1820
+      ],
+      "name": "T4 Save email",
+      "onError": "continueRegularOutput",
+      "id": "3c301640-f20d-4d86-b235-87a162933e85"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "leads",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "lead_id",
+              "condition": "eq",
+              "keyValue": "={{ $('T4 Check').item.json.lead_id }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "status",
+              "fieldValue": "in_sequence"
+            },
+            {
+              "fieldId": "current_touch",
+              "fieldValue": "4"
+            },
+            {
+              "fieldId": "next_touch_due",
+              "fieldValue": "={{ $now.plus({ days: 7 }).toISO() }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1840,
+        1820
+      ],
+      "name": "T4 Update lead",
+      "id": "ef9752cc-eb91-47ce-9408-08649d5f3ed7"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "2237dab4-3839-4e86-9f22-53c61d402859",
+              "leftValue": "={{ $('T4 Check').item.json.pass }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2060,
+        1820
+      ],
+      "name": "T4 Passed?",
+      "id": "b9e1bb87-120f-43a0-97bc-451fadc2151a"
+    },
+    {
+      "parameters": {
+        "resource": "draft",
+        "subject": "={{ $('T4 Check').item.json.subject }}",
+        "emailType": "text",
+        "message": "={{ $('T4 Check').item.json.body }}",
+        "options": {
+          "sendTo": "={{ $('T4 Check').item.json.to_email }}"
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        2280,
+        1740
+      ],
+      "name": "T4 Gmail draft",
+      "id": "0859ac51-a9ec-44d4-be59-40226da74fe2"
+    },
+    {
+      "parameters": {
+        "content": "# T5: Follow-up 3, last note (day 24)\nRuns daily at 09:40. Picks leads on touch 4 that are due.",
+        "height": 520,
+        "width": 2560,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -120,
+        2360
+      ],
+      "name": "T5 Note",
+      "id": "7ba492a6-0d4e-4301-b211-cec6564eb071"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "days",
+              "daysInterval": 1,
+              "triggerAtHour": 9,
+              "triggerAtMinute": 40
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        2560
+      ],
+      "name": "T5 Schedule",
+      "id": "20605d27-003f-40e9-a4aa-b542b262290f"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "leads",
+        "limit": 5,
+        "filterType": "manual",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "status",
+              "condition": "eq",
+              "keyValue": "in_sequence"
+            },
+            {
+              "keyName": "current_touch",
+              "condition": "eq",
+              "keyValue": "4"
+            },
+            {
+              "keyName": "next_touch_due",
+              "condition": "lte",
+              "keyValue": "={{ $now.toISO() }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        220,
+        2560
+      ],
+      "name": "T5 Get leads",
+      "id": "85951c22-34ad-4128-b305-8d01a52381f0"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        440,
+        2560
+      ],
+      "name": "T5 Loop",
+      "id": "1df43058-0d32-4444-bb64-9ab215591799"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "country_rules",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "country",
+              "keyValue": "={{ $json.country }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        660,
+        2460
+      ],
+      "name": "T5 Country rules",
+      "id": "1a981ea2-666d-4fa9-879d-0b19a19e4285"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "emails",
+        "limit": 1,
+        "filterType": "manual",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "lead_id",
+              "condition": "eq",
+              "keyValue": "={{ $('T5 Loop').item.json.lead_id }}"
+            },
+            {
+              "keyName": "touch",
+              "condition": "eq",
+              "keyValue": "1"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        880,
+        2460
+      ],
+      "name": "T5 First email",
+      "alwaysOutputData": true,
+      "id": "9ee1fbb0-4ad3-45df-9803-c6ff5c16d9b9"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You write the last email in a sequence for Hirevo, a fictional recruitment agency that fills open roles with vetted candidates (test data). The contact has not replied to the earlier emails.\n\nTASK\n1. Start with \"Hi\" and the contact's first name only, followed by a comma.\n2. Say politely that this is your last note on the topic. No pressure, no new product claims.\n3. Do not repeat the earlier emails.\n\nWrite only from the facts below. Do not invent facts about the company or the person.\n\nLEAD\nName: {{ $('T5 Loop').item.json.contact_name }}\nTitle: {{ $('T5 Loop').item.json.contact_title }}\nCompany: {{ $('T5 Loop').item.json.company }}\nIndustry: {{ $('T5 Loop').item.json.industry }}\nEmployees: {{ $('T5 Loop').item.json.employees }}\n\nCOUNTRY RULES (country {{ $('T5 Country rules').item.json.country }})\nPitch angle: {{ $('T5 Country rules').item.json.pitch_angle }}\nTone: {{ $('T5 Country rules').item.json.tone }}\nMain value: {{ $('T5 Country rules').item.json.main_value_prop }}\nSecondary value: {{ $('T5 Country rules').item.json.secondary_value_prop }}\nNever claim: {{ $('T5 Country rules').item.json.banned_claims.join('; ') }}\nMaximum words in the body: 50\nClosing line, copied exactly: If the timing is not right, just reply \"not now\" and I will close this on my side.\n\nFIRST EMAIL (already sent, for context only)\nSubject: {{ $('T5 First email').item.json.subject }}\n{{ $('T5 First email').item.json.body }}\n\nWRITING RULES\n- Put the closing line in its own paragraph, copied character for character. Then a paragraph with \"Kind regards,\" and on the next line \"Aria\".\n- Separate every paragraph with a blank line.\n- Subject line: 60 characters or fewer, no exclamation marks.\n- Never write a number followed by %, EUR, euro or a currency sign. Never state fees, salaries or a time-to-hire.\n- Never use the words: guarantee, guaranteed, risk-free, best, leading, number one, perfect candidate, salary.\n- Never use an em dash. Use commas or full stops.\n- Do not name client companies or partners.\n- Plain text only, short paragraphs, no bullet points, no emojis.\n\nOUTPUT\nReturn only valid JSON, nothing before or after it, in exactly this shape:\n{\"subject\": \"string\", \"body\": \"string with \\n for line breaks\"}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1100,
+        2460
+      ],
+      "name": "T5 AI Agent",
+      "id": "073cbec1-93e3-4fc1-8182-a056cb7628c0"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "claude-sonnet-5",
+          "cachedResultName": "Claude Sonnet 5"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.6,
+      "position": [
+        1100,
+        2680
+      ],
+      "name": "T5 Model",
+      "id": "1139388c-7bb0-475e-b28c-db5bd84dfc63"
+    },
+    {
+      "parameters": {
+        "jsCode": "// T5: Follow-up 3, last note (day 24)\nconst lead = $('T5 Loop').item.json;\nconst rules = $('T5 Country rules').item.json;\nconst first = $('T5 First email').item.json || {};\nconst TOUCH = 5;\nconst MAX_WORDS = 50;\nconst CTA = \"If the timing is not right, just reply \\\"not now\\\" and I will close this on my side.\";\nconst SUBJECT_MAX = 70;\nconst APPLY_COUNTRY_RULE = false;\n\n// 1. Read the AI's JSON\nconst raw = String($json.output ?? '').replace(/^```\\w*\\s*|```$/g, '').trim();\nlet data = {};\ntry { data = JSON.parse(raw); } catch (e) {}\n\nlet subject = String(data.subject ?? '').trim();\nif (first.subject) subject = 'Re: ' + String(first.subject).replace(/^re:\\s*/i, '');\nconst body = String(data.body ?? '').replace(/\\\\n/g, '\\n').trim();\nconst words = body.split(/\\s+/).filter(Boolean).length;\nconst all = subject + ' ' + body;\n\n// 2. Checks\nconst checks = {};\nchecks.valid_json = String(data.body ?? '').trim() !== '';\nchecks.subject_length = subject.length > 0 && subject.length <= SUBJECT_MAX;\nchecks.word_count = words > 0 && words <= MAX_WORDS;\nchecks.cta_present = body.includes(CTA);\nchecks.no_exact_figures = !/\\d+(\\.\\d+)?\\s?(%|percent|eur|euro|€|\\$|£)/i.test(all);\nchecks.no_guarantee = !/guarantee|risk-free/i.test(all);\nchecks.no_em_dash = !/\\u2014/.test(all);\nchecks.no_banned_words = !/\\b(best|number one|#1|leading|salary|perfect candidate)\\b/i.test(body);\n\n// 3. Country rule (first three emails only)\nif (APPLY_COUNTRY_RULE) {\n  const firstTwo = body.split(/(?<=[.?!])\\s+/).slice(0, 2).join(' ');\n  if (rules.country === 'A') {\n    checks.country_rule = /depend/i.test(body);\n  } else if (rules.country === 'B') {\n    checks.country_rule = /candidate/i.test(firstTwo);\n  } else if (rules.country === 'C') {\n    checks.country_rule = /depend/i.test(body) && /seniority/i.test(body);\n  } else if (rules.country === 'D') {\n    checks.country_rule = true; // covered by no_banned_words\n  } else {\n    checks.country_rule = false;\n  }\n}\n\n// 4. Result\nconst pass = Object.values(checks).every(Boolean);\nreturn {\n  json: {\n    pass,\n    status: pass ? 'draft' : 'failed',\n    touch: TOUCH,\n    checks,\n    failed_checks: Object.keys(checks).filter(k => !checks[k]),\n    lead_id: lead.lead_id,\n    country: rules.country,\n    to_email: lead.email,\n    subject,\n    body,\n    word_count: words,\n    raw_output: pass ? null : raw.slice(0, 1500)\n  }\n};",
+        "mode": "runOnceForEachItem"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1400,
+        2460
+      ],
+      "name": "T5 Check",
+      "id": "d475e583-2423-4fa5-8d01-ae1257443583"
+    },
+    {
+      "parameters": {
+        "tableId": "emails",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "lead_id",
+              "fieldValue": "={{ $('T5 Check').item.json.lead_id }}"
+            },
+            {
+              "fieldId": "touch",
+              "fieldValue": "={{ $('T5 Check').item.json.touch }}"
+            },
+            {
+              "fieldId": "country",
+              "fieldValue": "={{ $('T5 Check').item.json.country }}"
+            },
+            {
+              "fieldId": "subject",
+              "fieldValue": "={{ $('T5 Check').item.json.subject }}"
+            },
+            {
+              "fieldId": "body",
+              "fieldValue": "={{ $('T5 Check').item.json.body }}"
+            },
+            {
+              "fieldId": "word_count",
+              "fieldValue": "={{ $('T5 Check').item.json.word_count }}"
+            },
+            {
+              "fieldId": "status",
+              "fieldValue": "={{ $('T5 Check').item.json.status }}"
+            },
+            {
+              "fieldId": "checks",
+              "fieldValue": "={{ $('T5 Check').item.json.checks }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1620,
+        2460
+      ],
+      "name": "T5 Save email",
+      "onError": "continueRegularOutput",
+      "id": "8fa4bce3-2539-4beb-a208-d27e47e076c6"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "leads",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "lead_id",
+              "condition": "eq",
+              "keyValue": "={{ $('T5 Check').item.json.lead_id }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "status",
+              "fieldValue": "closed"
+            },
+            {
+              "fieldId": "current_touch",
+              "fieldValue": "5"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1840,
+        2460
+      ],
+      "name": "T5 Update lead",
+      "id": "65cf2029-2255-4dd5-ae75-ef7fd76cb004"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "33a348c9-a5fc-4d18-8a19-d914199d8ae3",
+              "leftValue": "={{ $('T5 Check').item.json.pass }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2060,
+        2460
+      ],
+      "name": "T5 Passed?",
+      "id": "f34bc518-198d-4d83-b596-e63403dea5b3"
+    },
+    {
+      "parameters": {
+        "resource": "draft",
+        "subject": "={{ $('T5 Check').item.json.subject }}",
+        "emailType": "text",
+        "message": "={{ $('T5 Check').item.json.body }}",
+        "options": {
+          "sendTo": "={{ $('T5 Check').item.json.to_email }}"
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        2280,
+        2380
+      ],
+      "name": "T5 Gmail draft",
+      "id": "13a16da4-c160-4e63-bcc4-83bd31131bd4"
+    }
+  ],
+  "connections": {
+    "T1 Schedule": {
+      "main": [
+        [
+          {
+            "node": "T1 Get leads",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "T1 Get leads": {
+      "main": [
+        [
+          {
+            "node": "T1 Loop",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "T1 Loop": {
+      "main": [
+        [],
+        [
+          {
+            "node": "T1 Country rules",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "T1 Country rules": {
+      "main": [
+        [
+          {
+            "node": "T1 AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "T1 Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "T1 AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "T1 AI Agent": {
+      "main": [
+        [
+          {
+            "node": "T1 Check",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "T1 Check": {
+      "main": [
+        [
+          {
+            "node": "T1 Save email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "T1 Save email": {
+      "main": [
+        [
+          {
+            "node": "T1 Update lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "T1 Update lead": {
+      "main": [
+        [
+          {
+            "node": "T1 Passed?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "T1 Passed?": {
+      "main": [
+        [
+          {
+            "node": "T1 Gmail draft",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "T1 Loop",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "T1 Gmail draft": {
+      "main": [
+        [
+          {
+            "node": "T1 Loop",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "T2 Country rules": {
+      "main": [
+        [
+          {
+            "node": "T2 First email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "T2 Schedule": {
+      "main": [
+        [
+          {
+            "node": "T2 Get leads",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "T2 Get leads": {
+      "main": [
+        [
+          {
+            "node": "T2 Loop",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "T2 Loop": {
+      "main": [
+        [],
+        [
+          {
+            "node": "T2 Country rules",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "T2 First email": {
+      "main": [
+        [
+          {
+            "node": "T2 AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "T2 Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "T2 AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "T2 AI Agent": {
+      "main": [
+        [
+          {
+            "node": "T2 Check",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "T2 Check": {
+      "main": [
+        [
+          {
+            "node": "T2 Save email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "T2 Save email": {
+      "main": [
+        [
+          {
+            "node": "T2 Update lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "T2 Update lead": {
+      "main": [
+        [
+          {
+            "node": "T2 Passed?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "T2 Passed?": {
+      "main": [
+        [
+          {
+            "node": "T2 Gmail draft",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "T2 Loop",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "T2 Gmail draft": {
+      "main": [
+        [
+          {
+            "node": "T2 Loop",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "T3 Country rules": {
+      "main": [
+        [
+          {
+            "node": "T3 First email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "T3 Schedule": {
+      "main": [
+        [
+          {
+            "node": "T3 Get leads",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "T3 Get leads": {
+      "main": [
+        [
+          {
+            "node": "T3 Loop",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "T3 Loop": {
+      "main": [
+        [],
+        [
+          {
+            "node": "T3 Country rules",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "T3 First email": {
+      "main": [
+        [
+          {
+            "node": "T3 AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "T3 Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "T3 AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "T3 AI Agent": {
+      "main": [
+        [
+          {
+            "node": "T3 Check",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "T3 Check": {
+      "main": [
+        [
+          {
+            "node": "T3 Save email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "T3 Save email": {
+      "main": [
+        [
+          {
+            "node": "T3 Update lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "T3 Update lead": {
+      "main": [
+        [
+          {
+            "node": "T3 Passed?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "T3 Passed?": {
+      "main": [
+        [
+          {
+            "node": "T3 Gmail draft",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "T3 Loop",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "T3 Gmail draft": {
+      "main": [
+        [
+          {
+            "node": "T3 Loop",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "T4 Country rules": {
+      "main": [
+        [
+          {
+            "node": "T4 First email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "T4 Schedule": {
+      "main": [
+        [
+          {
+            "node": "T4 Get leads",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "T4 Get leads": {
+      "main": [
+        [
+          {
+            "node": "T4 Loop",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "T4 Loop": {
+      "main": [
+        [],
+        [
+          {
+            "node": "T4 Country rules",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "T4 First email": {
+      "main": [
+        [
+          {
+            "node": "T4 AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "T4 Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "T4 AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "T4 AI Agent": {
+      "main": [
+        [
+          {
+            "node": "T4 Check",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "T4 Check": {
+      "main": [
+        [
+          {
+            "node": "T4 Save email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "T4 Save email": {
+      "main": [
+        [
+          {
+            "node": "T4 Update lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "T4 Update lead": {
+      "main": [
+        [
+          {
+            "node": "T4 Passed?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "T4 Passed?": {
+      "main": [
+        [
+          {
+            "node": "T4 Gmail draft",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "T4 Loop",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "T4 Gmail draft": {
+      "main": [
+        [
+          {
+            "node": "T4 Loop",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "T5 Country rules": {
+      "main": [
+        [
+          {
+            "node": "T5 First email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "T5 Schedule": {
+      "main": [
+        [
+          {
+            "node": "T5 Get leads",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "T5 Get leads": {
+      "main": [
+        [
+          {
+            "node": "T5 Loop",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "T5 Loop": {
+      "main": [
+        [],
+        [
+          {
+            "node": "T5 Country rules",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "T5 First email": {
+      "main": [
+        [
+          {
+            "node": "T5 AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "T5 Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "T5 AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "T5 AI Agent": {
+      "main": [
+        [
+          {
+            "node": "T5 Check",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "T5 Check": {
+      "main": [
+        [
+          {
+            "node": "T5 Save email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "T5 Save email": {
+      "main": [
+        [
+          {
+            "node": "T5 Update lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "T5 Update lead": {
+      "main": [
+        [
+          {
+            "node": "T5 Passed?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "T5 Passed?": {
+      "main": [
+        [
+          {
+            "node": "T5 Gmail draft",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "T5 Loop",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "T5 Gmail draft": {
+      "main": [
+        [
+          {
+            "node": "T5 Loop",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

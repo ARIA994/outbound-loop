@@ -1,0 +1,99 @@
+{
+  "country_rules": [
+    {
+      "country": "A",
+      "pitch_angle": "speed_to_fill",
+      "tone": "warm and professional",
+      "main_value_prop": "We fill open roles with a shortlist of vetted candidates, so hiring managers spend their time on interviews instead of sourcing.",
+      "secondary_value_prop": "One recruiter owns each role from brief to signed offer and reports progress every week.",
+      "target_titles": [
+        "Head of People",
+        "HR Director",
+        "Finance Director"
+      ],
+      "banned_claims": [
+        "guaranteed hires",
+        "exact time-to-hire figures",
+        "fee or price figures",
+        "naming client companies"
+      ],
+      "required_elements": [
+        "say that timing depends on the role and the market",
+        "one clear call to action: a 20-minute call"
+      ],
+      "cta": "Would you have 20 minutes this week or next for a quick call?",
+      "max_words": 110
+    },
+    {
+      "country": "B",
+      "pitch_angle": "candidate_quality",
+      "tone": "direct and friendly",
+      "main_value_prop": "Every candidate on the shortlist is screened for skills and fit before the hiring manager sees them.",
+      "secondary_value_prop": "HR gets fewer, better interviews instead of an inbox full of CVs.",
+      "target_titles": [
+        "HR Director",
+        "Head of People",
+        "Finance Director"
+      ],
+      "banned_claims": [
+        "guaranteed hires",
+        "promising the perfect candidate",
+        "fee or price figures",
+        "naming client companies"
+      ],
+      "required_elements": [
+        "lead with the quality of the candidates, not with speed",
+        "one clear call to action: a short call"
+      ],
+      "cta": "Do you have 20 minutes this week or next to walk through it together?",
+      "max_words": 110
+    },
+    {
+      "country": "C",
+      "pitch_angle": "hr_workload",
+      "tone": "polite and structured",
+      "main_value_prop": "We take sourcing and first-round screening off the HR team, so they can focus on onboarding and the people already there.",
+      "secondary_value_prop": "Clear weekly updates per role, so nobody has to chase the status.",
+      "target_titles": [
+        "HR Manager",
+        "HR Director",
+        "Head of People"
+      ],
+      "banned_claims": [
+        "guaranteed hires",
+        "exact time-to-hire figures",
+        "fee or price figures",
+        "naming client companies"
+      ],
+      "required_elements": [
+        "mention that the process depends on the seniority of the role",
+        "one clear call to action: a short call"
+      ],
+      "cta": "Would you be available for a short 20-minute call this week or next?",
+      "max_words": 120
+    },
+    {
+      "country": "D",
+      "pitch_angle": "employer_brand",
+      "tone": "concise and factual",
+      "main_value_prop": "We present the company to candidates in a clear and consistent way, which helps when hiring in a competitive market.",
+      "secondary_value_prop": "One partner for several open roles instead of separate agencies.",
+      "target_titles": [
+        "Head of HR",
+        "Head of People",
+        "Finance Director"
+      ],
+      "banned_claims": [
+        "superlatives such as the best or number one",
+        "salary or fee figures",
+        "guaranteed hires"
+      ],
+      "required_elements": [
+        "keep claims general, because hiring markets differ by country",
+        "one clear call to action: a short call"
+      ],
+      "cta": "Do you have 20 minutes this week or next for a short conversation?",
+      "max_words": 100
+    }
+  ]
+}

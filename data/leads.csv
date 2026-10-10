@@ -1,0 +1,41 @@
+lead_id,country,company,domain,industry,employees,city,contact_name,contact_title,email,hr_role_open_days,headcount_growth_pct_6m,funding_last_12m,retention_post_90d,personalization_hook
+A-001,A,Zenomar Ltd,zenomar.example,Engineering services,60,City A,Mia Hart,Finance Director,you+1@example.com,48,22,False,False,HR role open for 48 days
+A-002,A,Velaflow Ltd,velaflow.example,Fintech,60,City A,Mia Bennett,Finance Director,you+2@example.com,35,3,True,False,HR role open for 35 days
+A-003,A,Mareavento Ltd,mareavento.example,E-commerce,120,City A,Leo Keane,HR Director,you+3@example.com,75,3,True,True,HR role open for 75 days
+A-004,A,Quinvia Ltd,quinvia.example,Logistics,480,City A,Leo Ellis,Finance Director,you+4@example.com,35,22,True,True,HR role open for 35 days
+A-005,A,Dunetek Ltd,dunetek.example,Manufacturing,200,City A,Ethan Irving,Head of People,you+5@example.com,0,28,True,True,Headcount grew 28% in six months
+A-006,A,Miravia Ltd,miravia.example,Engineering services,80,City A,Leo Ellis,Head of People,you+6@example.com,90,45,True,True,HR role open for 90 days
+A-007,A,Lumeforge Ltd,lumeforge.example,E-commerce,260,City A,Lucas Cole,HR Director,you+7@example.com,60,10,True,True,HR role open for 60 days
+A-008,A,Mareaforge Ltd,mareaforge.example,Logistics,60,City A,Ethan Bennett,Finance Director,you+8@example.com,0,35,True,False,Headcount grew 35% in six months
+A-009,A,Marealine Ltd,marealine.example,Consulting,260,City A,Ethan Ellis,Head of People,you+9@example.com,90,22,True,True,HR role open for 90 days
+A-010,A,Belvento Ltd,belvento.example,Fintech,400,City A,Noah Ellis,Head of People,you+10@example.com,0,28,False,True,Headcount grew 28% in six months
+B-001,B,Orlaflow Ltd,orlaflow.example,Marketing agency,320,City B,Zoe Ellis,Head of People,you+11@example.com,0,10,True,True,Raised funding in the last 12 months
+B-002,B,Miramar Ltd,miramar.example,Health clinic,60,City B,Liam Cole,Head of People,you+12@example.com,0,28,True,False,Headcount grew 28% in six months
+B-003,B,Sollabs Ltd,sollabs.example,Retail,480,City B,Emma Cole,Finance Director,you+13@example.com,0,22,True,True,Headcount grew 22% in six months
+B-004,B,Orlawave Ltd,orlawave.example,Consulting,320,City B,Zoe Grant,HR Director,you+14@example.com,48,22,False,True,HR role open for 48 days
+B-005,B,Terranova Ltd,terranova.example,Engineering services,120,City B,Olivia Bennett,Finance Director,you+15@example.com,35,6,True,True,HR role open for 35 days
+B-006,B,Dunevento Ltd,dunevento.example,Engineering services,260,City B,Liam Dawson,Head of People,you+16@example.com,35,22,True,True,HR role open for 35 days
+B-007,B,Belnova Ltd,belnova.example,Manufacturing,200,City B,Ethan Hayes,Head of People,you+17@example.com,48,0,True,True,HR role open for 48 days
+B-008,B,Terragrid Ltd,terragrid.example,Marketing agency,480,City B,Lucas Cole,Head of People,you+18@example.com,48,35,True,True,HR role open for 48 days
+B-009,B,Miragrid Ltd,miragrid.example,Health clinic,320,City B,Zoe Irving,Finance Director,you+19@example.com,48,28,True,False,HR role open for 48 days
+B-010,B,Fioranova Ltd,fioranova.example,Marketing agency,150,City B,Lucas Hart,Finance Director,you+20@example.com,0,35,True,False,Headcount grew 35% in six months
+C-001,C,Orlaforge Ltd,orlaforge.example,Health clinic,400,City C,Lucas Fox,HR Manager,you+21@example.com,60,28,False,False,HR role open for 60 days
+C-002,C,Belbase Ltd,belbase.example,Logistics,320,City C,Leo Hart,Head of People,you+22@example.com,48,10,True,True,HR role open for 48 days
+C-003,C,Lumeflow Ltd,lumeflow.example,Retail,120,City C,Lucas Bennett,HR Manager,you+23@example.com,35,28,True,True,HR role open for 35 days
+C-004,C,Mareawave Ltd,mareawave.example,E-commerce,480,City C,Ethan Cole,HR Manager,you+24@example.com,35,22,True,True,HR role open for 35 days
+C-005,C,Briogrid Ltd,briogrid.example,Marketing agency,150,City C,Olivia Grant,HR Director,you+25@example.com,90,28,False,False,HR role open for 90 days
+C-006,C,Mareaworks Ltd,mareaworks.example,Consulting,480,City C,Ava Irving,HR Director,you+26@example.com,90,28,False,True,HR role open for 90 days
+C-007,C,Quinmar Ltd,quinmar.example,Engineering services,60,City C,Zoe Irving,HR Manager,you+27@example.com,48,3,False,True,HR role open for 48 days
+C-008,C,Altaworks Ltd,altaworks.example,Health clinic,200,City C,Zoe Irving,HR Manager,you+28@example.com,35,45,True,True,HR role open for 35 days
+C-009,C,Quinvento Ltd,quinvento.example,Consulting,480,City C,Liam Hayes,Head of People,you+29@example.com,0,45,True,True,Headcount grew 45% in six months
+C-010,C,Fioratek Ltd,fioratek.example,Logistics,320,City C,Zoe Ellis,HR Director,you+30@example.com,60,22,True,True,HR role open for 60 days
+D-001,D,Miraflow Ltd,miraflow.example,Retail,200,City D,Liam Dawson,Head of HR,you+31@example.com,75,28,True,True,HR role open for 75 days
+D-002,D,Brioflow Ltd,brioflow.example,Manufacturing,320,City D,Ethan Cole,Head of HR,you+32@example.com,60,35,True,True,HR role open for 60 days
+D-003,D,Velahub Ltd,velahub.example,Fintech,260,City D,Lucas Hart,Finance Director,you+33@example.com,90,35,False,True,HR role open for 90 days
+D-004,D,Fioravia Ltd,fioravia.example,Marketing agency,60,City D,Liam Dawson,Head of HR,you+34@example.com,60,28,False,False,HR role open for 60 days
+D-005,D,Tavimint Ltd,tavimint.example,Manufacturing,80,City D,Ava Grant,Head of People,you+35@example.com,0,0,True,True,Raised funding in the last 12 months
+D-006,D,Velalabs Ltd,velalabs.example,Logistics,200,City D,Emma Bennett,Head of HR,you+36@example.com,75,0,True,True,HR role open for 75 days
+D-007,D,Zenogrid Ltd,zenogrid.example,Retail,200,City D,Mia Ellis,Head of HR,you+37@example.com,48,28,True,True,HR role open for 48 days
+D-008,D,Koraline Ltd,koraline.example,E-commerce,120,City D,Ava Irving,Head of People,you+38@example.com,0,35,True,False,Headcount grew 35% in six months
+D-009,D,Norlabs Ltd,norlabs.example,Consulting,150,City D,Emma Hart,Head of People,you+39@example.com,0,22,True,False,Headcount grew 22% in six months
+D-010,D,Taviline Ltd,taviline.example,Health clinic,260,City D,Ethan Irving,Head of HR,you+40@example.com,48,10,True,True,HR role open for 48 days
